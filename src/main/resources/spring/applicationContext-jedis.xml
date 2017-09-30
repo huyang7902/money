@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<beans xmlns="http://www.springframework.org/schema/beans"-->
+	<!--xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"-->
+	<!--xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"-->
+	<!--xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+	<!--xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd-->
+	<!--http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd-->
+	<!--http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd-->
+	<!--http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">-->
+
+	<!--<context:property-placeholder location="classpath:resource/redis.properties" />-->
+
+	<!--<context:component-scan base-package="com.ids.common"></context:component-scan>-->
+
+	<!--&lt;!&ndash; 配置redis连接池 &ndash;&gt;-->
+	<!--<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig"></bean>-->
+	<!--<bean id="jedis.shardInfo" class="redis.clients.jedis.JedisShardInfo">-->
+		<!--<constructor-arg name="host" value="${redis.host}"></constructor-arg>-->
+		<!--<constructor-arg name="port" value="${redis.port}"></constructor-arg>-->
+		<!--<property name="password" value="${redis.password}"></property>-->
+	<!--</bean>-->
+	<!--<bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">-->
+		<!--<constructor-arg name="poolConfig" ref="jedisPoolConfig"></constructor-arg>-->
+		<!--<constructor-arg name="shards">-->
+			<!--<list>-->
+				<!--<ref bean="jedis.shardInfo" />-->
+			<!--</list>-->
+		<!--</constructor-arg>-->
+	<!--</bean>-->
+	<!---->
+	<!--<bean id="jedisClient" class="com.huyang.common.utils.JedisClient"></bean>-->
+
+
+	<!--&lt;!&ndash; jedis集群版配置 &ndash;&gt;-->
+	<!--&lt;!&ndash; <bean id="redisClient" class="redis.clients.jedis.JedisCluster"> <constructor-arg -->
+		<!--name="nodes"> <set> <bean class="redis.clients.jedis.HostAndPort"> <constructor-arg -->
+		<!--name="host" value="192.168.171.50"></constructor-arg> <constructor-arg name="port" -->
+		<!--value="7001"></constructor-arg> </bean> <bean class="redis.clients.jedis.HostAndPort"> -->
+		<!--<constructor-arg name="host" value="192.168.171.50"></constructor-arg> <constructor-arg -->
+		<!--name="port" value="7002"></constructor-arg> </bean> <bean class="redis.clients.jedis.HostAndPort"> -->
+		<!--<constructor-arg name="host" value="192.168.171.50"></constructor-arg> <constructor-arg -->
+		<!--name="port" value="7003"></constructor-arg> </bean> <bean class="redis.clients.jedis.HostAndPort"> -->
+		<!--<constructor-arg name="host" value="192.168.171.50"></constructor-arg> <constructor-arg -->
+		<!--name="port" value="7004"></constructor-arg> </bean> <bean class="redis.clients.jedis.HostAndPort"> -->
+		<!--<constructor-arg name="host" value="192.168.171.50"></constructor-arg> <constructor-arg -->
+		<!--name="port" value="7005"></constructor-arg> </bean> <bean class="redis.clients.jedis.HostAndPort"> -->
+		<!--<constructor-arg name="host" value="192.168.171.50"></constructor-arg> <constructor-arg -->
+		<!--name="port" value="7006"></constructor-arg> </bean> </set> </constructor-arg> -->
+		<!--</bean> <bean id="jedisClientCluster" class="com.taotao.sso.dao.impl.JedisClientCluster"></bean> &ndash;&gt;-->
+
+<!--</beans>-->
