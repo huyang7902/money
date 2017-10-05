@@ -6,24 +6,17 @@
 <!-- 导航栏 -->
 <jsp:include page="/WEB-INF/jsp/common/_navbar.jsp"/>
 <div class="container">
-
+    <h1 class="text-center">添加个人账单</h1>
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
             <div class="form-group">
-                <label for="money">价格</label>
+                <label for="money">金额</label>
                 <input type="number" class="form-control" id="_money" name="_money" placeholder="价格" required>
             </div>
             <div class="form-group">
                 <label for="useFor">用途</label>
                 <input type="text" class="form-control" id="_useFor" name="_useFor" placeholder="用途" required>
             </div>
-            <%--<div class="form-group">
-                <label>用途</label>
-                <select class="form-control" name="use">
-                    <option value="1">买菜</option>
-                    <option value="0">其他</option>
-                </select>
-            </div>--%>
 
             <button type="button" id="_submit" class="btn btn-primary center-block" data-toggle="modal" data-target="#submitModal">提交</button>
     </div>
@@ -39,7 +32,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="money">价格</label>
+                        <label for="money">金额</label>
                         <input type="number" class="form-control" id="money" name="money" placeholder="价格" required disabled>
                     </div>
                     <div class="form-group">
@@ -49,7 +42,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                    <button type="button" id="submit" class="btn btn-primary" data-loading-text="Loading...">保存</button>
+                    <button type="button" id="submit" class="btn btn-primary" data-loading-text="Loading..." autocomplete="off">保存</button>
                 </div>
             </div>
         </div>
@@ -82,9 +75,12 @@
 <jsp:include page="/WEB-INF/jsp/common/_footer.jsp"/>
 </body>
 <script>
+
     $(function () {
-        $("#goAddMoneyLog").addClass("active");
+        $("#goAddMyMoneyLog").addClass("active");
+        $(".my").addClass("active");
     });
+
     $(function() {
         $("#_submit").click(function(){
             var money = $("#_money").val();
@@ -100,7 +96,9 @@
         });
 
         $("#submit").click(function(){
+
             var $btn = $("#submit").button('loading');
+
             var m = $("#money").val();
             var u = $("#useFor").val();
             var data = {
@@ -109,7 +107,7 @@
             };
             $.ajax({
                 type : 'POST',
-                url : '${basePath}/money/addMoneyLog.html',
+                url : '${basePath}/my/addMyMoneyLog.html',
                 dataType : 'json',
                 data : data,
                 success : function(data) {
@@ -131,7 +129,7 @@
                     }
                 },
             });
-            $btn.button('reset')
+            $btn.button('reset');
         });
     });
 

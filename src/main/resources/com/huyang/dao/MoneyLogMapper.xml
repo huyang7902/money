@@ -4,11 +4,12 @@
   <resultMap id="BaseResultMap" type="com.huyang.lib.to.MoneyLog" >
     <id column="ID" property="id" jdbcType="INTEGER" />
     <result column="MONEY" property="money" jdbcType="DECIMAL" />
+    <result column="TOTLE_MONEY" property="totleMoney" jdbcType="DECIMAL" />
     <result column="USEFOR" property="usefor" jdbcType="VARCHAR" />
     <result column="UID" property="uid" jdbcType="INTEGER" />
     <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
     <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
-    <result column="WEEKS" property="weeks" jdbcType="TINYINT" />
+    <result column="WEEKS" property="weeks" jdbcType="VARCHAR" />
     <result column="STATUS" property="status" jdbcType="TINYINT" />
   </resultMap>
   
@@ -35,7 +36,7 @@
       WEEKS, STATUS)
     values (#{id,jdbcType=INTEGER}, #{money,jdbcType=DECIMAL}, #{usefor,jdbcType=VARCHAR}, 
       #{uid,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{weeks,jdbcType=TINYINT}, #{status,jdbcType=TINYINT})
+      #{weeks,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
   </insert>
   <insert id="insertSelective" parameterType="com.huyang.lib.to.MoneyLog" >
     insert into money_log
@@ -85,7 +86,7 @@
         #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="weeks != null" >
-        #{weeks,jdbcType=TINYINT},
+        #{weeks,jdbcType=VARCHAR},
       </if>
       <if test="status != null" >
         #{status,jdbcType=TINYINT},
@@ -111,7 +112,7 @@
         CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="weeks != null" >
-        WEEKS = #{weeks,jdbcType=TINYINT},
+        WEEKS = #{weeks,jdbcType=VARCHAR},
       </if>
       <if test="status != null" >
         STATUS = #{status,jdbcType=TINYINT},
@@ -126,9 +127,12 @@
       UID = #{uid,jdbcType=INTEGER},
       USER_NAME = #{userName,jdbcType=VARCHAR},
       CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
-      WEEKS = #{weeks,jdbcType=TINYINT},
+      WEEKS = #{weeks,jdbcType=VARCHAR},
       STATUS = #{status,jdbcType=TINYINT}
     where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="balance">
+    UPDATE money_log set STATUS = 0 where STATUS = 1
   </update>
 
   <select id="getMoneyLogByYearAndMonth" resultMap="BaseResultMap">
@@ -145,12 +149,45 @@
       order by CREATE_TIME desc
 
   </select>
-  <select id="getweekMoneyLog" resultMap="BaseResultMap">
+  <select id="getMoneyLog" resultMap="BaseResultMap" parameterType="com.huyang.criteria.MoneyLogCriteriaTO">
     SELECT * FROM money_log
-    where STATUS = 1
+    <where>
+      <if test="uid != null and uid != ''">UID = #{uid}</if>
+      <if test="status != null and status != ''">STATUS = #{status}</if>
+      <if test="createTime != null and createTime != ''">CREATE_TIME =#{createTime}</if>
+      <if test="year != null and month != null">
+        and DATE_FORMAT(CREATE_TIME, '%Y-%c') = '${year}-${month}'
+      </if>
+      <if test="year != null and month == null">
+        and DATE_FORMAT(CREATE_TIME, '%Y') = #{year}
+      </if>
+    </where>
     ORDER BY CREATE_TIME desc
   </select>
+
   <select id="getMoneyByUserName" resultMap="UserTotleMap">
-    SELECT SUM(MONEY) as SUM_MONEY, USER_NAME FROM MONEY_LOG GROUP BY USER_NAME
+    SELECT SUM(MONEY) as SUM_MONEY, USER_NAME FROM money_log GROUP BY USER_NAME
+  </select>
+
+
+  <select id="getUnBalanceSumMoneyLog" resultMap="BaseResultMap">
+    SELECT SUM(money) as TOTLE_MONEY,USER_NAME, UID FROM money_log WHERE STATUS= 1 and UID = #{uid}
+  </select>
+
+  <select id="getSumMoneyLog" resultMap="BaseResultMap">
+    SELECT SUM(money) as TOTLE_MONEY,USER_NAME, UID FROM money_log WHERE STATUS= 0 and UID = #{uid}
+  </select>
+
+  <select id="getMoneyLogByYearAndMonthTotle" resultType="java.math.BigDecimal">
+    SELECT sum(MONEY) FROM money_log
+    where
+      STATUS = 0
+      <if test="year != null and month != null">
+        and DATE_FORMAT(CREATE_TIME, '%Y-%c') = '${year}-${month}'
+      </if>
+      <if test="year != null and month == null">
+        and DATE_FORMAT(CREATE_TIME, '%Y') = #{year}
+      </if>
+
   </select>
 </mapper>

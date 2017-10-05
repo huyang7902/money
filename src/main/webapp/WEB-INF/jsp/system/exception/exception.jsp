@@ -11,10 +11,10 @@
 
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
-        <h1>您好：${loginUser.name}</h1>
-        <p>您上次登录时间为：<fmt:formatDate value="${loginUser.lastLogin}" pattern="yyyy-MM-dd HH:mm:ss"/> </p>
-
+        ${exception}
     </div>
+
+
 
 </div> <!-- /container -->
 
@@ -23,7 +23,7 @@
 </body>
 <script>
     $(function () {
-        $("#index").addClass("active");
+        //$("#updateLog").addClass("active");
     });
 </script>
 </html>

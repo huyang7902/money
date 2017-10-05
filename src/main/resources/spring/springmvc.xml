@@ -39,6 +39,7 @@
 		</mvc:interceptor>
 	</mvc:interceptors>
 
+
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/jsp/" />
@@ -48,6 +49,7 @@
 	<!-- 资源映射 -->
 	<mvc:resources location="/WEB-INF/resources/js/" mapping="/resources/js/**" />
 	<mvc:resources location="/WEB-INF/resources/css/" mapping="/resources/css/**" />
+	<mvc:resources location="/WEB-INF/resources/images/" mapping="/resources/images/**" />
 
 
 	<!-- 定义文件上传解析器 -->

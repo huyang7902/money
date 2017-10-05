@@ -8,7 +8,6 @@ import com.huyang.common.utils.ResponseResult;
 import com.huyang.dao.UserMapper;
 import com.huyang.lib.to.User;
 import com.huyang.web.Constants;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -46,35 +46,37 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public ResponseResult UserLogin(HttpServletRequest request,HttpServletResponse response) {
 
-		Integer id = RequestUtil.getInteger(request, "id");
+		String userName = RequestUtil.getString(request, "userName");
 		String password = RequestUtil.getString(request, "password");
 
-		User user = userMapper.selectByPrimaryKey(RequestUtil.getInteger(request, "id"));
+		//User user = userMapper.selectByPrimaryKey(RequestUtil.getInteger(request, "id"));
+		User user = userMapper.getUserByName(userName);
 		if (user == null) {
-			logger.info("用户：" + user.getId() + "用户名或密码错误！");
+			logger.info("用户：" + userName + "用户名或密码错误！");
 			return ResponseResult.build(400, "用户名不存在！");
 		}
-		if (!StringUtils.isBlank(user.getPassword())) {
+
 			if (!DigestUtils.md5DigestAsHex(password.getBytes()).equals(user.getPassword())) {
-				logger.info("用户：" + id + "密码错误！");
+				logger.info("用户：" + userName + "密码错误！");
 				return ResponseResult.build(400, "密码错误！");
 			}
-		}
 		// 生成token
 		String token = UUID.randomUUID().toString();
 		// 保存用户名密码之前清空密码
 		user.setPassword(null);
 		// 把用户信息写入Echcache
 		String key = String.format(EhCacheType.USER_LOGIN.getKey(), token);
-		EchcacheManager.setCacheByKeyAndName(EhCacheType.USER_LOGIN.getName(), key, user);
+		EchcacheManager.setCacheByKeyAndName(EhCacheType.USER_LOGIN.getName(), key, user);//引用内存中的对象
 		// 设置session的过期时间
 		//jedisClient.expire(Constants.IDS_USER_TOKEN + ":" + token, Constants.expire);
 
 		// 添加写cookie的逻辑，cookie的有效期是关闭浏览器就失效
 		CookieUtils.setCookie(request, response, Constants.USER_TOKEN, token);
 		// 设置最后登录时间
-		user.setLastLogin(new Date());
-		userMapper.updateByPrimaryKeySelective(user);
+		User user1 = new User();
+		user1.setId(user.getId());
+		user1.setLastLogin(new Date());
+		userMapper.updateByPrimaryKeySelective(user1);
 
 		logger.info("用户：" + user.getName() + "登录成功！");
 		return ResponseResult.build(200, user.getName()+"欢迎回来！", user);
@@ -117,7 +119,12 @@ public class UserServiceImpl implements UserService {
 		if (i != 1) {
 			return ResponseResult.build(400, "修改密码失败！");
 		}
-		return ResponseResult.ok();
+		return new ResponseResult("修改密码成功！");
+	}
+
+	@Override
+	public List<User> getAllUser() {
+		return userMapper.getAllUser();
 	}
 
 }

@@ -11,9 +11,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
+    <meta name="description" content="记账系统">
+    <meta name="author" content="huyang">
+    <title>记账系统</title>
+    <link rel="icon" href="${resourcesPath}/images/favicon.ico" type="image/x-icon">
 
     <!-- Bootstrap core CSS -->
     <link href="${resourcesPath}/css/bootstrap.min.css" rel="stylesheet">

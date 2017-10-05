@@ -12,5 +12,4 @@
 <script src="${resourcesPath}/js/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="${resourcesPath}/js/jquery.min.js"><\/script>')</script>
 <script src="${resourcesPath}/js/bootstrap.min.js"></script>
-<script src="${resourcesPath}/js/riqishijian.js"></script>
 

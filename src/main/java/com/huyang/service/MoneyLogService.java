@@ -1,7 +1,7 @@
 package com.huyang.service;
 
+import com.huyang.criteria.MoneyLogCriteriaTO;
 import com.huyang.lib.to.MoneyLog;
-import com.huyang.lib.to.UserTotle;
 
 import java.util.List;
 
@@ -21,10 +21,21 @@ public interface MoneyLogService {
     List<MoneyLog> getMoneyLogByYearAndMonth(Integer year, Integer month);
 
     /**
-     * 本周记录
+     * 根据条件查找账单
      * @return
      */
-    List<MoneyLog> getweekMoneyLog();
+    List<MoneyLog> getMoneyLog(MoneyLogCriteriaTO criteria);
 
-    List<UserTotle> getMoneyByUserName();
+    /**
+     * 查询所有未结算账单金额和
+     * @param uid
+     * @return
+     */
+    MoneyLog getUnBalanceSumMoneyLog(Integer uid);
+
+    /**
+     * 结算账单
+     * @return
+     */
+    int balance();
 }

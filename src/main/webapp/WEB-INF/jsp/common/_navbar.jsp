@@ -16,25 +16,26 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">记账系统</a>
+            <a id="updateLog" class="navbar-brand" href="${basePath}/system/updateLog.html">记账系统</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="${basePath}/money/weekMoneyLog.html">本周</a></li>
-                <li><a href="${basePath}/money/listMoneyLog.html">历史</a></li>
-                <li><a href="${basePath}/money/goAddMoneyLog.html">添加</a></li>
-                <li><a href="#contact">Contact</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                <li id="index"><a href="${basePath}/money/index.html">主页</a></li>
+                <li id="ListUnBalanceMoney"><a href="${basePath}/money/ListUnBalanceMoney.html">未结算</a></li>
+                <li id="goAddMoneyLog"><a href="${basePath}/money/goAddMoneyLog.html">添加</a></li>
+                <li id="listMoneyLog"><a href="${basePath}/money/listMoneyLog.html">历史账单</a></li>
+                <li id="settlementHistory"><a href="${basePath}/money/settlementHistory.html">历史结算</a></li>
+                <li id="dropdown" class="dropdown my">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">我的 <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li class="dropdown-header">Nav header</li>
-                        <li><a href="#">Separated link</a></li>
-                        <li><a href="#">One more separated link</a></li>
+                        <li id="listMyMoneyLog"><a href="${basePath}/my/listMyMoneyLog.html">历史</a></li>
+                        <li id="goAddMyMoneyLog"><a href="${basePath}/my/goAddMyMoneyLog.html">添加</a></li>
+                    </ul>
+                </li>
+                <li id="dropdown" class="dropdown setting">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">设置 <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li id="resetPassword"><a href="${basePath}/setting/resetPassword.html">修改密码</a></li>
                     </ul>
                 </li>
             </ul>
@@ -45,4 +46,5 @@
             </ul>
         </div><!--/.nav-collapse -->
     </div>
+
 </nav>

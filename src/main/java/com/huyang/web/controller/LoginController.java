@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * @Project: ids-web
+ * @Project: money
  * @Package com.huyang.web.controller.login
  * @author HuYang
  * @date 2017年4月23日 下午5:34:21
@@ -68,8 +68,8 @@ public class LoginController extends BaseController {
 			model.addAttribute("responseResult", responseResult);
 			return "system/login/login";
 		}
-		User user = (User) responseResult.getData();
-		model.addAttribute("user", user);
+		//User user = (User) responseResult.getData();
+		//model.addAttribute("user", user);
 		return "redirect:/money/index.html";
 	}
 
@@ -128,7 +128,7 @@ public class LoginController extends BaseController {
 	 * @param newPassConfirm
 	 * @return
 	 */
-	@RequestMapping("/resetPass.html")
+	@RequestMapping("/goResetPassword.html")
 	@ResponseBody
 	public ResponseResult resetPass(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(required = true) String originPass, @RequestParam(required = true) String newPass,

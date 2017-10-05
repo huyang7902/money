@@ -5,6 +5,7 @@ import com.huyang.lib.to.User;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 用户service层
@@ -50,4 +51,10 @@ public interface UserService {
 	 * @return
 	 */
 	ResponseResult resetPass(User loginUser, String originPass, String newPass);
+
+	/**
+	 * 得到所有用户
+	 * @return
+	 */
+	List<User> getAllUser();
 }

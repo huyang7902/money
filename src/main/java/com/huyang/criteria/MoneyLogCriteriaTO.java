@@ -1,10 +1,15 @@
-package com.huyang.lib.to;
+package com.huyang.criteria;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class MoneyLog implements Serializable{
+/**
+ * @Author <a href="yang.hu@downjoy.com">胡洋</a>
+ * @Date 2017/10/2 13:12
+ */
+public class MoneyLogCriteriaTO implements Serializable{
+
     private Integer id;
 
     private BigDecimal money;
@@ -17,11 +22,14 @@ public class MoneyLog implements Serializable{
 
     private Date createTime;
 
-    private String weeks;
+    private Byte weeks;
 
     private Byte status;
 
-    private BigDecimal totleMoney;
+    /**********附加查询条件********************/
+
+    private Integer year;
+    private Integer month;
 
     public Integer getId() {
         return id;
@@ -44,7 +52,7 @@ public class MoneyLog implements Serializable{
     }
 
     public void setUsefor(String usefor) {
-        this.usefor = usefor == null ? null : usefor.trim();
+        this.usefor = usefor;
     }
 
     public Integer getUid() {
@@ -60,7 +68,7 @@ public class MoneyLog implements Serializable{
     }
 
     public void setUserName(String userName) {
-        this.userName = userName == null ? null : userName.trim();
+        this.userName = userName;
     }
 
     public Date getCreateTime() {
@@ -71,11 +79,11 @@ public class MoneyLog implements Serializable{
         this.createTime = createTime;
     }
 
-    public String getWeeks() {
+    public Byte getWeeks() {
         return weeks;
     }
 
-    public void setWeeks(String weeks) {
+    public void setWeeks(Byte weeks) {
         this.weeks = weeks;
     }
 
@@ -87,11 +95,19 @@ public class MoneyLog implements Serializable{
         this.status = status;
     }
 
-    public BigDecimal getTotleMoney() {
-        return totleMoney;
+    public Integer getYear() {
+        return year;
     }
 
-    public void setTotleMoney(BigDecimal totleMoney) {
-        this.totleMoney = totleMoney;
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public Integer getMonth() {
+        return month;
+    }
+
+    public void setMonth(Integer month) {
+        this.month = month;
     }
 }

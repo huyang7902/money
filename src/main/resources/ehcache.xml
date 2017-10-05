@@ -19,31 +19,15 @@
            memoryStoreEvictionPolicy="LRU"/>
 
     <!-- 20分钟 -->
-    <cache name="selectAmount" eternal="false"
-           maxElementsInMemory="20"
+    <cache name="userLastLoginTime" eternal="false"
+           maxElementsInMemory="100"
            overflowToDisk="false"
            diskPersistent="false"
            timeToIdleSeconds="0"
-           timeToLiveSeconds="1200"
+           timeToLiveSeconds="0"
            memoryStoreEvictionPolicy="LRU"/>
 
-    <!-- 10分钟 -->
-    <cache name="findByMonthAndAmount" eternal="false"
-           maxElementsInMemory="500"
-           overflowToDisk="false"
-           diskPersistent="false"
-           timeToIdleSeconds="0"
-           timeToLiveSeconds="600"
-           memoryStoreEvictionPolicy="LRU"/>
 
-    <!-- 20分钟 -->
-    <cache name="findAdv" eternal="false"
-           maxElementsInMemory="20"
-           overflowToDisk="false"
-           diskPersistent="false"
-           timeToIdleSeconds="0"
-           timeToLiveSeconds="1200"
-           memoryStoreEvictionPolicy="LRU"/>
 
 
 

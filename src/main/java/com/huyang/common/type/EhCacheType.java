@@ -9,6 +9,7 @@ import com.huyang.web.Constants;
 public enum EhCacheType {
 
     USER_LOGIN("userLogin", Constants.USER_TOKEN + "：%s"),
+    USER_LAST_LOGIN_TIME("userLastLoginTime", Constants.USER_TOKEN + "：%s"),
     ;
 
 

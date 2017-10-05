@@ -1,5 +1,3 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -9,32 +7,24 @@
 <jsp:include page="/WEB-INF/jsp/common/_navbar.jsp"/>
 <div class="container">
 
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+            <div class="form-group">
+                <label for="originPass">原始密码</label>
+                <input type="number" class="form-control" id="originPass" name="originPass" placeholder="原始密码">
+            </div>
+            <div class="form-group">
+                <label for="newPass">新密码</label>
+                <input type="text" class="form-control" id="newPass" name="newPass" placeholder="新密码" required>
+            </div>
+            <div class="form-group">
+                <label for="newPassConfirm">重复新密码</label>
+                <input type="text" class="form-control" id="newPassConfirm" name="newPassConfirm" placeholder="重复新密码" required>
+            </div>
 
-        <button type="button" id="calculate" class="btn btn-info">计算</button>
 
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th>姓名</th>
-                <th>金额</th>
-                <th>用途</th>
-                <th>时间</th>
-            </tr>
-            </thead>
-            <tbody>
-            <c:forEach var="moneyLog" items="${moneyLogList}">
-                <tr>
-                    <th scope="row">${moneyLog.userName}</th>
-                    <td>${moneyLog.money}</td>
-                    <td>${moneyLog.usefor}</td>
-                    <td><fmt:formatDate value="${moneyLog.createTime}" pattern="yyyy-MM-dd HH:mm"/> </td>
-                </tr>
-            </c:forEach>
-            </tbody>
-        </table>
-        <div id="result">
-
-        </div>
+            <button type="button" id="submit" class="btn btn-primary center-block">提交</button>
+    </div>
 
     <!-- 消息提示框 -->
     <div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel">
@@ -53,26 +43,42 @@
             </div>
         </div>
     </div>
+
+
+
+
 </div> <!-- /container -->
 
 <jsp:include page="/WEB-INF/jsp/common/_footer.jsp"/>
 </body>
 <script>
     $(function () {
-        $("#calculate").click(function () {
+        $("#resetPassword").addClass("active");
+        $(".setting").addClass("active");
+    });
+
+    $(function() {
+        $("#submit").click(function(){
+            var originPass = $("#originPass").val();
+            var newPass = $("#newPass").val();
+            var newPassConfirm = $("#newPassConfirm").val();
+            var data = {
+                originPass:originPass,
+                newPass:newPass,
+                newPassConfirm:newPassConfirm
+            };
             $.ajax({
                 type : 'POST',
-                url : '${basePath}/money/calculate.html',
+                url : '${basePath}/setting/doResetPassword.html',
                 dataType : 'json',
+                data : data,
                 success : function(data) {
-                    $("#result").html("");
-                    var html = "";
-                    html += "<p>总计："+data.totle+"</p>";
-                    html += "<p>胡洋："+data.hy+"</p>";
-                    html += "<p>何晓波："+data.hxb+"</p>";
-                    html += "<p>李丹全："+data.ldq+"</p>";
-                    html += "<p>平均："+data.avg+"</p>";
-                    $("#result").html(html);
+                    if (data.status == 200) {
+                        $("#dataModalContent").html("<strong style='color: green'>"+data.msg+"</strong>");
+                    } else {
+                        $("#dataModalContent").html("<strong style='color: red'>"+data.msg+"</strong><br/>");
+                    }
+                    $('#dataModal').modal('show');
                 },
                 error : function(data) {
                     if(data!=null) {
@@ -86,10 +92,9 @@
             });
         });
 
-
-
     });
 
-</script>
 
+
+</script>
 </html>

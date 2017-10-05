@@ -1,9 +1,8 @@
 package com.huyang.service;
 
+import com.huyang.criteria.MoneyLogCriteriaTO;
 import com.huyang.dao.MoneyLogMapper;
 import com.huyang.lib.to.MoneyLog;
-import com.huyang.lib.to.MoneyResult;
-import com.huyang.lib.to.UserTotle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,12 +30,19 @@ public class MoneyLogServiceImpl implements MoneyLogService{
     }
 
     @Override
-    public List<MoneyLog> getweekMoneyLog() {
-        return moneyLogMapper.getweekMoneyLog();
+    public List<MoneyLog> getMoneyLog(MoneyLogCriteriaTO criteria) {
+        return moneyLogMapper.getMoneyLog(criteria);
+    }
+
+
+
+    @Override
+    public MoneyLog getUnBalanceSumMoneyLog(Integer uid) {
+        return moneyLogMapper.getUnBalanceSumMoneyLog(uid);
     }
 
     @Override
-    public List<UserTotle> getMoneyByUserName() {
-        return moneyLogMapper.getMoneyByUserName();
+    public int balance() {
+        return moneyLogMapper.balance();
     }
 }

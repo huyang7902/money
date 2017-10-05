@@ -5,13 +5,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @Author <a href="yang.hu@downjoy.com">胡洋</a>
- * @Date 2017/9/11 14:14
+ * @Date 2017/10/2 20:09
  */
+@RequestMapping("/system")
 @Controller
-public class IndexController {
+public class SystemController {
 
-    @RequestMapping(value = {"/index.html", "/"})
-    public String index() {
-        return "money/index.html";
+    @RequestMapping("/updateLog.html")
+    public String updateLog(){
+        return "/system/updateLog/updateLog";
     }
 }

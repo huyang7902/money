@@ -1,10 +1,9 @@
 package com.huyang.lib.to;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class MoneyLog implements Serializable{
+public class MyMoneyLog {
     private Integer id;
 
     private BigDecimal money;
@@ -18,10 +17,6 @@ public class MoneyLog implements Serializable{
     private Date createTime;
 
     private String weeks;
-
-    private Byte status;
-
-    private BigDecimal totleMoney;
 
     public Integer getId() {
         return id;
@@ -77,21 +72,5 @@ public class MoneyLog implements Serializable{
 
     public void setWeeks(String weeks) {
         this.weeks = weeks;
-    }
-
-    public Byte getStatus() {
-        return status;
-    }
-
-    public void setStatus(Byte status) {
-        this.status = status;
-    }
-
-    public BigDecimal getTotleMoney() {
-        return totleMoney;
-    }
-
-    public void setTotleMoney(BigDecimal totleMoney) {
-        this.totleMoney = totleMoney;
     }
 }

@@ -17,31 +17,32 @@
         &nbsp;
         &nbsp;
         <div class="form-group">
-            <label >年</label>
             <select class="form-control" name="year">
-                <option value="2017">2017</option>
-                <option value="2018">2018</option>
-                <option value="2019">2019</option>
+                <c:forEach items="${yearList}" var="year1">
+                    <option value="${year1}" ${year == year1 ? 'selected' : '' }>${year1}</option>
+                </c:forEach>
             </select>
+            <label >年</label>
         </div>
         &nbsp;
         &nbsp;
         <div class="form-group">
-            <label >月</label>
             <select class="form-control" name="month">
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
+                <c:forEach items="${monthList}" var="month1">
+                    <option value="${month1}" ${month == month1 ? 'selected' : '' }>${month1}</option>
+                </c:forEach>
             </select>
+            <label >月</label>
         </div>
         &nbsp;
         &nbsp;
         <button type="submit" class="btn btn-info">查询</button>
     </form>
-
-        <c:forEach var="map" items="${map}" varStatus="status">
-        <h4>本周</h4>
+    <h3>总和：${moneyLogTotle}元</h3>
+    <c:forEach items="${sumMoneyLogList}" var="sumMoneyLog">
+        <h4>${sumMoneyLog.userName}：${sumMoneyLog.totleMoney}元</h4>
+    </c:forEach>
+    <div class="table-responsive">
         <table class="table table-hover">
             <thead>
             <tr>
@@ -52,23 +53,26 @@
             </tr>
             </thead>
             <tbody>
-            <c:forEach var="moneyLog" items="${map.value}">
+            <c:forEach var="moneyLog" items="${list}">
                 <tr>
                     <th scope="row">${moneyLog.userName}</th>
                     <td>${moneyLog.money}</td>
                     <td>${moneyLog.usefor}</td>
-                    <td><fmt:formatDate value="${moneyLog.createTime}" pattern="yyyy-MM-dd HH:mm"/> </td>
+                    <td><fmt:formatDate value="${moneyLog.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/> 周${moneyLog.weeks} </td>
                 </tr>
             </c:forEach>
             </tbody>
         </table>
-        </c:forEach>
-
-
-
+    </div>
 </div> <!-- /container -->
 
 <jsp:include page="/WEB-INF/jsp/common/_footer.jsp"/>
 </body>
+
+<script>
+    $(function () {
+        $("#listMoneyLog").addClass("active");
+    });
+</script>
 
 </html>

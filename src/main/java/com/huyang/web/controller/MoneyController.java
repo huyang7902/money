@@ -1,15 +1,23 @@
 package com.huyang.web.controller;
 
 
+import com.huyang.common.cache.EchcacheManager;
+import com.huyang.common.type.EhCacheType;
 import com.huyang.common.type.MoneyLogType;
-import com.huyang.common.utils.MathUtil;
+import com.huyang.common.utils.CookieUtils;
 import com.huyang.common.utils.RequestUtil;
 import com.huyang.common.utils.ResponseResult;
+import com.huyang.criteria.MoneyLogCriteriaTO;
+import com.huyang.dao.MoneyLogMapper;
+import com.huyang.dao.SettlementHistoryMapper;
 import com.huyang.lib.to.MoneyLog;
 import com.huyang.lib.to.MoneyResult;
+import com.huyang.lib.to.SettlementHistory;
 import com.huyang.lib.to.User;
-import com.huyang.lib.to.UserTotle;
 import com.huyang.service.MoneyLogService;
+import com.huyang.service.UserService;
+import com.huyang.web.Constants;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +30,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 记账系统controller
@@ -39,57 +50,151 @@ public class MoneyController extends BaseController {
     @Autowired
     private MoneyLogService moneyLogService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private MoneyLogMapper moneyLogMapper;
+
+    @Autowired
+    private SettlementHistoryMapper settlementHistoryMapper;
+
     /**
      * 跳转首页
      * @return
      */
-    @RequestMapping(value = {"/index.html", "/listMoney.html"})
+    @RequestMapping(value = {"/index.html"})
     public String index(HttpServletRequest request) {
-        User loginUser = getLoginUser(request);
+        //User loginUser = getLoginUser(request);
+        String token = CookieUtils.getCookieValue(request, Constants.USER_TOKEN);
+        //获取缓存中的登录时间
+        String key = String.format(EhCacheType.USER_LOGIN.getKey(), token);
+        User loginUser = (User) EchcacheManager.getCacheByKeyAndName(EhCacheType.USER_LOGIN.getName(), key);
         request.setAttribute("loginUser",loginUser);
         return "money/home";
     }
 
     /**
-     * 本周数据
+     * 未结算数据
      * @param request
      * @param response
      * @return
      */
-    @RequestMapping("/weekMoneyLog.html")
+    @RequestMapping("/ListUnBalanceMoney.html")
     public String weekMoneyLog(HttpServletRequest request, HttpServletResponse response) {
-        List<MoneyLog> moneyLogList = moneyLogService.getweekMoneyLog();
+        MoneyLogCriteriaTO criteriaTO = new MoneyLogCriteriaTO();
+        criteriaTO.setStatus((byte) 1);
+        List<MoneyLog> moneyLogList = moneyLogService.getMoneyLog(criteriaTO);
         request.setAttribute("moneyLogList", moneyLogList);
-        return "money/weekMoneyLog";
+        return "money/listUnBalanceMoney";
     }
 
+    /**
+     * 计算未结算账单
+     * @return
+     */
     @RequestMapping("/calculate.html")
     @ResponseBody
     public MoneyResult calculate() {
-        List<MoneyLog> moneyLogList = moneyLogService.getweekMoneyLog();
-        List<UserTotle> moneyByUserNameList = moneyLogService.getMoneyByUserName();
-        MoneyResult moneyResult = new MoneyResult();
-        double sum = 0;
-        for (UserTotle userTotle : moneyByUserNameList) {
-            sum += MathUtil.add(sum, userTotle.getSumMoney());
-            switch (userTotle.getUserName()) {
-                case "胡洋":
-                    moneyResult.setHy(userTotle.getSumMoney());
-                    break;
-                case "何晓波":
-                    moneyResult.setHxb(userTotle.getSumMoney());
-                    break;
-                case "李丹全":
-                    moneyResult.setLdq(userTotle.getSumMoney());
-                    break;
-                default:
-                    break;
+        List<MoneyLog> moneyLogList = new ArrayList<>();
+        // 查询所有用户
+        List<User> allUser = userService.getAllUser();
+        for (User user : allUser) {
+            MoneyLogCriteriaTO criteriaTO = new MoneyLogCriteriaTO();
+            criteriaTO.setStatus((byte) 1);
+            criteriaTO.setUid(user.getId());
+            MoneyLog usermoneyLog = moneyLogService.getUnBalanceSumMoneyLog(user.getId());
+            if (usermoneyLog == null ) {
+                MoneyLog moneyLog = new MoneyLog();
+                moneyLog.setUid(user.getId());
+                moneyLog.setUserName(user.getName());
+                moneyLog.setTotleMoney(new BigDecimal(0));
+                moneyLogList.add(moneyLog);
+            } else {
+                moneyLogList.add(usermoneyLog);
             }
         }
-        moneyResult.setTotle(new BigDecimal(sum));
-        moneyResult.setAvg(new BigDecimal(MathUtil.defaultDiv(3, sum)));
 
+        BigDecimal sum = new BigDecimal(0);
+
+        for (MoneyLog moneyLog : moneyLogList) {
+            sum = sum.add(moneyLog.getTotleMoney());
+        }
+        BigDecimal avg = sum.divide(BigDecimal.valueOf(allUser.size()), BigDecimal.ROUND_CEILING);
+        //计算个人账单
+        for (MoneyLog moneyLog : moneyLogList) {
+            moneyLog.setMoney(moneyLog.getTotleMoney().subtract(avg));
+        }
+        //返回结果
+        MoneyResult moneyResult = new MoneyResult();
+        moneyResult.setTotle(sum);
+        moneyResult.setAvg(avg);
+        moneyResult.setMoneyLogList(moneyLogList);
         return moneyResult;
+    }
+
+    /**
+     * 结算
+     * @return
+     */
+    @RequestMapping("/balance.html")
+    @ResponseBody
+    public ResponseResult balance(HttpServletRequest request) {
+        List<MoneyLog> moneyLogList = new ArrayList<>();
+        // 查询所有用户
+        List<User> allUser = userService.getAllUser();
+        for (User user : allUser) {
+            MoneyLogCriteriaTO criteriaTO = new MoneyLogCriteriaTO();
+            criteriaTO.setStatus((byte) 1);
+            criteriaTO.setUid(user.getId());
+            MoneyLog usermoneyLog = moneyLogService.getUnBalanceSumMoneyLog(user.getId());
+            if (usermoneyLog == null ) {
+                MoneyLog moneyLog = new MoneyLog();
+                moneyLog.setUid(user.getId());
+                moneyLog.setUserName(user.getName());
+                moneyLog.setTotleMoney(new BigDecimal(0));
+                moneyLogList.add(moneyLog);
+            } else {
+                moneyLogList.add(usermoneyLog);
+            }
+        }
+
+        BigDecimal sum = new BigDecimal(0);
+
+        for (MoneyLog moneyLog : moneyLogList) {
+            sum = sum.add(moneyLog.getTotleMoney());
+        }
+        BigDecimal avg = sum.divide(BigDecimal.valueOf(allUser.size()),BigDecimal.ROUND_CEILING);
+        //计算个人账单
+        for (MoneyLog moneyLog : moneyLogList) {
+            moneyLog.setMoney(moneyLog.getTotleMoney().subtract(avg));
+        }
+
+        //把状态从未结算置为结算
+        moneyLogService.balance();
+
+        // 添加结算记录
+        SettlementHistory settlementHistory = new SettlementHistory();
+        settlementHistory.setTotleMoney(sum);
+        settlementHistory.setAvgMoney(avg);
+        settlementHistory.setCreateDate(new Date());
+        settlementHistory.setCreateUser(getLoginUser(request).getName());
+        // 详细
+        StringBuilder sb = new StringBuilder();
+        MoneyLog moneyLog = null;
+        for (int i = 0; i <moneyLogList.size() ; i++) {
+             moneyLog = moneyLogList.get(i);
+            sb.append(moneyLog.getUserName()).append("：").append(moneyLog.getTotleMoney()).append("元(").append(moneyLog.getMoney()).append("元)");
+             if (i < moneyLogList.size()-1) {
+                 sb.append("；");
+             }
+        }
+
+        settlementHistory.setDetail(sb.toString());
+        settlementHistoryMapper.insert(settlementHistory);
+
+        //发送邮件
+        return new ResponseResult("结算成功！");
 
     }
 
@@ -109,29 +214,41 @@ public class MoneyController extends BaseController {
         month = (month == null || month <1 || month > 12) ? calendar.get(Calendar.MONTH)+1 : month;
 
         List<MoneyLog> moneyLogByYearAndMonth = moneyLogService.getMoneyLogByYearAndMonth(year, month);
-        Map<Byte, ArrayList<MoneyLog>> map = new LinkedHashMap<>();
-        ArrayList<MoneyLog> list = new ArrayList<>();
-        Set<Byte> set = new HashSet<>();
-        int num = 0;
-        for (MoneyLog moneyLog : moneyLogByYearAndMonth) {
-            byte weeks = moneyLog.getWeeks();
-            if (set.add(weeks)) {
-                if (list.size() != 0) {
-                    map.put(list.get(0).getWeeks(),list);
-                }
-                list = new ArrayList<>(); // 用clear会导致map.put的list置空
-                list.add(moneyLog);
+        BigDecimal moneyLogByYearAndMonthTotle = moneyLogMapper.getMoneyLogByYearAndMonthTotle(year, month);
+
+        //个人统计
+        List<MoneyLog> sumMoneyLogList = new ArrayList<>();
+        for (User user : userService.getAllUser()) {
+            MoneyLog sumMoneyLogByUid = moneyLogMapper.getSumMoneyLog(user.getId());
+            if (sumMoneyLogByUid == null) {
+                MoneyLog moneyLog = new MoneyLog();
+                moneyLog.setUid(user.getId());
+                moneyLog.setUserName(user.getName());
+                moneyLog.setTotleMoney(new BigDecimal(0));
+                sumMoneyLogList.add(moneyLog);
             } else {
-                list.add(moneyLog);
-            }
-            num++;
-            // 最后一个元素
-            if(num == moneyLogByYearAndMonth.size()) {
-                map.put(list.get(0).getWeeks(),list);
+                sumMoneyLogList.add(sumMoneyLogByUid);
             }
         }
 
-        request.setAttribute("map", map);
+
+        List<Integer> yearList = new ArrayList<>();
+        List<Integer> monthList = new ArrayList<>();
+        for (int i = 2017; i < 2020; i++) {
+            yearList.add(i);
+        }
+        for (int i = 1; i < 13; i++) {
+            monthList.add(i);
+        }
+
+        //request.setAttribute("map", map);
+        request.setAttribute("list", moneyLogByYearAndMonth);
+        request.setAttribute("moneyLogTotle", moneyLogByYearAndMonthTotle);
+        request.setAttribute("sumMoneyLogList", sumMoneyLogList);
+        request.setAttribute("year", year);
+        request.setAttribute("month", month);
+        request.setAttribute("yearList", yearList);
+        request.setAttribute("monthList", monthList);
 
         return "money/listMoneyLog";
     }
@@ -170,11 +287,38 @@ public class MoneyController extends BaseController {
         moneyLog.setUid(loginUser.getId());
         moneyLog.setUserName(loginUser.getName());
         moneyLog.setStatus(MoneyLogType.ENABLE.getCode());
+        moneyLog.setCreateTime(new Date());
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        int weeks = calendar.get(Calendar.WEEK_OF_MONTH);
-        moneyLog.setWeeks((byte)weeks);
+        int week = calendar.get(Calendar.DAY_OF_WEEK);
+        String weeks = "";
+        switch (week-1) {
+            case 1:
+                weeks = "一";
+                break;
+            case 2:
+                weeks = "二";
+                break;
+            case 3:
+                weeks = "三";
+                break;
+            case 4:
+                weeks = "四";
+                break;
+            case 5:
+                weeks = "五";
+                break;
+            case 6:
+                weeks = "六";
+                break;
+            case 7:
+                weeks = "日";
+            default:
+                break;
+
+        }
+        moneyLog.setWeeks(weeks);
 
         try {
             int  rows = moneyLogService.addMoneyLog(moneyLog);
@@ -189,6 +333,82 @@ public class MoneyController extends BaseController {
             return ResponseResult.build(400, "添加失败！", e.toString());
         }
     }
+
+    @RequestMapping("/deleteMoneyLog.html")
+    @ResponseBody
+    public ResponseResult deleteMoneyLog(HttpServletRequest request) {
+        Integer id = RequestUtil.getInteger(request, "id");
+        if (id == null) {
+            return ResponseResult.build(400, "该条账单不存在！");
+        }
+        MoneyLog moneyLog = moneyLogMapper.selectByPrimaryKey(id);
+
+        if (moneyLog == null) {
+            return ResponseResult.build(400, "该条账单不存在！");
+        }
+
+        User loginUser = getLoginUser(request);
+
+        if (moneyLog.getUid() != loginUser.getId()) {
+            return ResponseResult.build(400, "只能删除自己的账单！");
+        }
+
+        int i = moneyLogMapper.deleteByPrimaryKey(id);
+
+        if (i != 1) {
+            return ResponseResult.build(400, "删除失败！");
+        }
+
+        return ResponseResult.ok("删除成功！");
+    }
+
+    /**
+     * 编辑账单
+     * @param request
+     * @return
+     */
+    @RequestMapping("editMoneyLog.html")
+    @ResponseBody
+    public ResponseResult editMoneyLog(HttpServletRequest request) {
+        Integer id = RequestUtil.getInteger(request, "id");
+        Integer uid = RequestUtil.getInteger(request, "uid");
+        String usefor = RequestUtil.getString(request, "usefor");
+        String money = RequestUtil.getString(request, "money");
+
+        if (id == null || uid == null || StringUtils.isBlank(usefor) || StringUtils.isBlank(money)) {
+            return ResponseResult.build(400, "数据不完整！");
+        }
+
+        MoneyLog moneyLog = moneyLogMapper.selectByPrimaryKey(id);
+
+        if (moneyLog == null) {
+            return ResponseResult.build(400, "该账单不存在！");
+        }
+
+        moneyLog.setUsefor(usefor);
+        moneyLog.setMoney(new BigDecimal(money));
+
+        int i = moneyLogMapper.updateByPrimaryKeySelective(moneyLog);
+
+        if (i != 1) {
+            return ResponseResult.build(400, "更新失败！");
+        }
+
+        return ResponseResult.ok("更新成功！");
+    }
+
+    /**
+     * 历史结算信息
+     * @param request
+     * @return
+     */
+    @RequestMapping("/settlementHistory.html")
+    public String settlementHistory(HttpServletRequest request) {
+        List<SettlementHistory> settlementHistoryList = settlementHistoryMapper.getAllHistory();
+        request.setAttribute("settlementHistoryList",settlementHistoryList);
+        return "money/settlementHistory";
+    }
+
 
 
 }
