@@ -195,13 +195,16 @@
                 dataType : 'json',
                 success : function(data) {
                     if (data.status == 200) {
-                        //$("#result").html("");
-                        //$("tbody").html("");
                         $("#dataModalContent").html("<strong style='color: green'>" + data.msg + "</strong>");
                         $('#dataModal').modal('show');
                         $('#dataModal').on('hidden.bs.modal', function (e) {
                             location.href = "${basePath}/money/ListUnBalanceMoney.html";
                         });
+                    }
+
+                    if (data.status == 400) {
+                        $("#dataModalContent").html("<strong style='color: red'>" + data.msg + "</strong>");
+                        $('#dataModal').modal('show');
                     }
 
                 },

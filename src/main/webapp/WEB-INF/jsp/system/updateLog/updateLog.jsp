@@ -6,11 +6,17 @@
 <jsp:include page="/WEB-INF/jsp/common/_header.jsp"/>
 <style>
     .date{
+
         margin-top: 10px;
         margin-bottom: 0px;
     }
     .updateLog{
         padding-left: 10px;
+    }
+    .detail{
+        color: #555555;
+        font-size:13px;
+        padding-left: 20px;
     }
 </style>
 <body>
@@ -27,6 +33,8 @@
         <div class="updateLog">
             更新功能如下：<br>
             一、可以查看结算历史记录<br>
+            二、优化没有未结算账单不能结算<br>
+            三、把所有表格变为响应式，优化弹框显示<br>
         </div>
         <p class="date">时间：2017-10-4</p>
         <div class="updateLog">
@@ -34,17 +42,25 @@
             功能如下：<br>
             一、添加记账功能<br>
             二、未结算列表<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;1、计算功能<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;2、结算功能<br>
+            <div class="detail">
+                1、计算功能<br>
+                2、结算功能<br>
+            </div>
             三、历史账单记录功能(未结算)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;1、根据月份进行搜索<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;2、计算每个人的账单总计<br>
+            <div class="detail">
+            1、根据月份进行搜索<br>
+            2、计算每个人的账单总计<br>
+            </div>
             四、个人记账功能<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;1、添加<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;2、查看历史记录<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;3、计算历史账单总计<br>
+            <div class="detail">
+            1、添加<br>
+            2、查看历史记录<br>
+            3、计算历史账单总计<br>
+            </div>
             五、设置功能<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;1、修改个人密码(md5加密)<br>
+            <div class="detail">
+            1、修改个人密码(md5加密)<br>
+            </div>
             六、用户登录<br>
             七、用户登出<br>
         </div>

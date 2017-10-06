@@ -140,6 +140,16 @@ public class MoneyController extends BaseController {
     @RequestMapping("/balance.html")
     @ResponseBody
     public ResponseResult balance(HttpServletRequest request) {
+
+
+        // 判断是否有未结算账单
+        MoneyLogCriteriaTO criteria = new MoneyLogCriteriaTO();
+        criteria.setStatus(MoneyLogType.ENABLE.getCode());
+        List<MoneyLog> unBalancemoneyLogList = moneyLogService.getMoneyLog(criteria);
+        if (unBalancemoneyLogList == null || unBalancemoneyLogList.size() == 0) {
+            return ResponseResult.build(400, "当前没有未结算的账单！");
+        }
+
         List<MoneyLog> moneyLogList = new ArrayList<>();
         // 查询所有用户
         List<User> allUser = userService.getAllUser();
@@ -193,7 +203,7 @@ public class MoneyController extends BaseController {
         settlementHistory.setDetail(sb.toString());
         settlementHistoryMapper.insert(settlementHistory);
 
-        //发送邮件
+        //TODO 发送邮件
         return new ResponseResult("结算成功！");
 
     }
