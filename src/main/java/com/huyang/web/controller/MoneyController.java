@@ -1,10 +1,9 @@
 package com.huyang.web.controller;
 
 
-import com.huyang.common.cache.EchcacheManager;
-import com.huyang.common.type.EhCacheType;
 import com.huyang.common.type.MoneyLogType;
 import com.huyang.common.utils.CookieUtils;
+import com.huyang.common.utils.RequestAttrUtil;
 import com.huyang.common.utils.RequestUtil;
 import com.huyang.common.utils.ResponseResult;
 import com.huyang.criteria.MoneyLogCriteriaTO;
@@ -68,9 +67,8 @@ public class MoneyController extends BaseController {
         //User loginUser = getLoginUser(request);
         String token = CookieUtils.getCookieValue(request, Constants.USER_TOKEN);
         //获取缓存中的登录时间
-        String key = String.format(EhCacheType.USER_LOGIN.getKey(), token);
-        User loginUser = (User) EchcacheManager.getCacheByKeyAndName(EhCacheType.USER_LOGIN.getName(), key);
-        request.setAttribute("loginUser",loginUser);
+        User user = RequestAttrUtil.getUser(request);
+        request.setAttribute("loginUser",user);
         return "money/home";
     }
 
@@ -304,6 +302,8 @@ public class MoneyController extends BaseController {
         int week = calendar.get(Calendar.DAY_OF_WEEK);
         String weeks = "";
         switch (week-1) {
+            case 0:
+                weeks = "日";//周日是第一天
             case 1:
                 weeks = "一";
                 break;
@@ -322,8 +322,6 @@ public class MoneyController extends BaseController {
             case 6:
                 weeks = "六";
                 break;
-            case 7:
-                weeks = "日";
             default:
                 break;
 

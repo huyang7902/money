@@ -12,6 +12,6 @@ public class IndexController {
 
     @RequestMapping(value = {"/index.html", "/"})
     public String index() {
-        return "money/index.html";
+        return "redirect:/money/index.html";
     }
 }

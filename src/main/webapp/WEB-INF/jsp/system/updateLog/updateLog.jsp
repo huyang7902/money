@@ -29,6 +29,12 @@
         <h3 class="text-center" ><strong >更新日志</strong></h3>
         <h4 class="text-center">项目地址：https://github.com/huyang7902/money</h4>
 
+        <p class="date">时间：2019-12-23</p>
+        <div class="updateLog">
+            更新功能如下：<br>
+            一、切换为springboot<br>
+        </div>
+
         <p class="date">时间：2017-10-5</p>
         <div class="updateLog">
             更新功能如下：<br>

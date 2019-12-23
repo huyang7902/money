@@ -5,6 +5,8 @@ public interface Constants {
 
 	String JSON_ROOT = "JSON_ROOT";
 
+	String REQ_ATTR_USER = "REQ_ATTR_USER";
+
 
 	/**
 	 * 用户session缓存key

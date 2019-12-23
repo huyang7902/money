@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.huyang.common.cache.EchcacheManager;
 import com.huyang.common.type.EhCacheType;
 import com.huyang.common.utils.CookieUtils;
+import com.huyang.common.utils.RequestAttrUtil;
 import com.huyang.lib.to.User;
 import com.huyang.web.Constants;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class LoginStatusInterceptor extends HandlerInterceptorAdapter implements
 			setResponse(request, response);
 			return false;
 		}
-
+		RequestAttrUtil.setUser(request, loginUser);
 		return true;
 	}
 
@@ -78,13 +79,6 @@ public class LoginStatusInterceptor extends HandlerInterceptorAdapter implements
 
 	/**
 	 * isIgnore 忽略的url
-	 *
-	 * @param path
-	 * @return boolean
-	 *
-	 * @version V1.0.0
-	 * @author <a href="chufeng.xu@downjoy.com">徐楚风</a>
-	 * @since 2017-02-16 15:21
 	 */
 	public static boolean isIgnore(String path) {
 		if (path != null && (path.contains("/css/") || path.contains("/img/")

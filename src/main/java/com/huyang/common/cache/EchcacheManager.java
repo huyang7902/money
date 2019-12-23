@@ -1,12 +1,24 @@
 package com.huyang.common.cache;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
+
+import net.sf.ehcache.Ehcache;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class EchcacheManager {
+
+
+    private static CacheManager manager;
+
+    @Autowired
+    public  void setManager(CacheManager manager) {
+        EchcacheManager.manager = manager;
+    }
 
     /**
      * 获取缓存中对象
@@ -16,15 +28,10 @@ public class EchcacheManager {
      * @return
      */
     public static Object getCacheByKeyAndName(String ecName, String key) {
-        Element el = null;
-        CacheManager manager = CacheManager.create();
-        // 通过manager可以生成指定名称的Cache对象
         Cache cache = manager.getCache(ecName);
-//        List a = cache.getKeys();
-        if (cache != null && cache.isKeyInCache(key)) {
-            el = cache.get(key);
-            if (el != null)
-                return el.getObjectValue();
+        if (cache != null) {
+            Cache.ValueWrapper valueWrapper = cache.get(key);
+            return valueWrapper == null ? null : valueWrapper.get();
         }
 
         return null;
@@ -38,13 +45,10 @@ public class EchcacheManager {
      * @param value
      */
     public static void setCacheByKeyAndName(String ecName, String key, Object value) {
-        Element el = null;
-        CacheManager manager = CacheManager.create();
         // 通过manager可以生成指定名称的Cache对象
         Cache cache = manager.getCache(ecName);
-        if (value != null) {
-            el = new Element(key, value);
-            cache.put(el);
+        if (cache != null && value != null) {
+            cache.put(key, value);
         }
     }
 
@@ -55,10 +59,9 @@ public class EchcacheManager {
      * @param key
      */
     public static void removeCache(String ecName, String key) {
-        CacheManager manager = CacheManager.create();     //通过manager可以生成指定名称的Cache对象
         Cache cache = manager.getCache(ecName);
-        if (cache != null && cache.isKeyInCache(key)) {   //将指定key的缓存对象从缓存中清除
-            cache.remove(key);
+        if (cache != null ) {   //将指定key的缓存对象从缓存中清除
+            cache.evict(key);
         }
     }
 
@@ -68,10 +71,10 @@ public class EchcacheManager {
      * @param ecName
      */
     public static void removeAllCache(String ecName) {
-        CacheManager manager = CacheManager.create();     //通过manager可以生成指定名称的Cache对象
         Cache cache = manager.getCache(ecName);
         if (cache != null) {
-            cache.removeAll();
+            Ehcache nativeCache = (Ehcache) cache.getNativeCache();
+            nativeCache.removeAll();
         }
     }
 
@@ -81,12 +84,12 @@ public class EchcacheManager {
      * @param ecName
      */
     public static void removeMatchCache(String ecName, String key) {
-        CacheManager manager = CacheManager.create();     //通过manager可以生成指定名称的Cache对象
         Cache cache = manager.getCache(ecName);
-        if (cache != null && cache.getKeys() != null && cache.getKeys().size() > 0) {
-            for (String existKey : (List<String>)cache.getKeys()) {
+        Ehcache nativeCache = (Ehcache) cache.getNativeCache();
+        if (cache != null && nativeCache.getKeys() != null && nativeCache.getKeys().size() > 0) {
+            for (String existKey : (List<String>)nativeCache.getKeys()) {
                 if (existKey.startsWith(key)) {
-                    cache.remove(existKey);
+                    nativeCache.remove(existKey);
                 }
             }
         }
