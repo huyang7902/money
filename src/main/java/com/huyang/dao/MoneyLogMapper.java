@@ -32,8 +32,10 @@ public interface MoneyLogMapper {
 
     MoneyLog getSumMoneyLog(Integer uid);
 
-    int balance();
+    int balance(Integer settlementId);
 
     BigDecimal getMoneyLogByYearAndMonthTotle(@Param("year") Integer year, @Param("month") Integer month);
+
+    List<MoneyLog> getMoneyLogBySettlementId(Integer settlementId);
 
 }

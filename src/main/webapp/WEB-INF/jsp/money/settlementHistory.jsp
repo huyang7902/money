@@ -28,6 +28,8 @@
                     <td>${settlementHistory.detail}</td>
                     <td><fmt:formatDate value="${settlementHistory.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
                     <td>${settlementHistory.createUser}</td>
+                    <td><a href="${basePath}/money/settlementHistoryInfo.html?settlementId=${settlementHistory.id}" >详情</a></td>
+
                 </tr>
             </c:forEach>
             </tbody>

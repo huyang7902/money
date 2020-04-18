@@ -178,9 +178,6 @@ public class MoneyController extends BaseController {
             moneyLog.setMoney(moneyLog.getTotleMoney().subtract(avg));
         }
 
-        //把状态从未结算置为结算
-        moneyLogService.balance();
-
         // 添加结算记录
         SettlementHistory settlementHistory = new SettlementHistory();
         settlementHistory.setTotleMoney(sum);
@@ -200,6 +197,9 @@ public class MoneyController extends BaseController {
 
         settlementHistory.setDetail(sb.toString());
         settlementHistoryMapper.insert(settlementHistory);
+
+        //把状态从未结算置为结算，并关联结算单
+        moneyLogService.balance(settlementHistory.getId());
 
         //TODO 发送邮件
         return new ResponseResult("结算成功！");
@@ -303,7 +303,9 @@ public class MoneyController extends BaseController {
         String weeks = "";
         switch (week-1) {
             case 0:
-                weeks = "日";//周日是第一天
+                //周日是第一天
+                weeks = "日";
+                break;
             case 1:
                 weeks = "一";
                 break;
@@ -357,7 +359,7 @@ public class MoneyController extends BaseController {
 
         User loginUser = getLoginUser(request);
 
-        if (moneyLog.getUid() != loginUser.getId()) {
+        if (!moneyLog.getUid().equals(loginUser.getId())) {
             return ResponseResult.build(400, "只能删除自己的账单！");
         }
 
@@ -415,6 +417,23 @@ public class MoneyController extends BaseController {
         List<SettlementHistory> settlementHistoryList = settlementHistoryMapper.getAllHistory();
         request.setAttribute("settlementHistoryList",settlementHistoryList);
         return "money/settlementHistory";
+    }
+
+
+    /**
+     * 历史结算详细信息
+     * @param request
+     * @return
+     */
+    @RequestMapping("/settlementHistoryInfo.html")
+    public String settlementHistoryInfo(HttpServletRequest request,
+                                        @RequestParam("settlementId") Integer settlementId) {
+        SettlementHistory settlementHistory = settlementHistoryMapper.selectByPrimaryKey(settlementId);
+        List<MoneyLog> moneyLogList = moneyLogMapper.getMoneyLogBySettlementId(settlementId);
+        request.setAttribute("settlementHistory", settlementHistory);
+        request.setAttribute("moneyLogList", moneyLogList);
+
+        return "money/settmentInfo";
     }
 
 

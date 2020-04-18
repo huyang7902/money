@@ -37,5 +37,5 @@ public interface MoneyLogService {
      * 结算账单
      * @return
      */
-    int balance();
+    int balance(Integer settlementId);
 }

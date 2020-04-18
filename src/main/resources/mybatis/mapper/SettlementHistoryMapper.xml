@@ -22,7 +22,7 @@
     delete from settlement_history
     where ID = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.huyang.lib.to.SettlementHistory" >
+  <insert id="insert" parameterType="com.huyang.lib.to.SettlementHistory" useGeneratedKeys="true" keyProperty="id">
     insert into settlement_history (ID, TOTLE_MONEY, AVG_MONEY, 
       DETAIL, CREATE_DATE, CREATE_USER
       )

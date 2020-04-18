@@ -14,7 +14,8 @@
 
 
 
-## 运行及部署说明
+
+## 运行环境说明
 本项目最终打包为war包，如果打包成jar包部署时会有问题（idea工具下面没有问题）
 比较重要的依赖
 
@@ -52,6 +53,46 @@
     <scope>provided</scope>
 </dependency>
 ```
+
+## 启动部署命令说明
+1.在spring-boot插件添加如下配置
+```xml
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <configuration>
+        <executable>true</executable>
+    </configuration>
+</plugin>
+``` 
+2.创建软连接到/etc/init.d/目录下
+```shell script
+$ sudo ln -s /usr/local/misc_apps/money.jar /etc/init.d/money
+```
+4.将money添加到系统服务中
+```shell script
+$ sudo chkconfig --add money
+```
+查看服务列表
+```shell script
+$ sudo chkconfig --list
+```
+
+3.启动
+```shell script
+$ service money start|stop|restart
+```
+或者
+```shell script
+/etc/init.d/money start|stop|restart
+```
+4.注册为自启动(随着系统启动)
+```shell script
+$ update-rc.d money defaults <priority>
+```
+
+
+
 
 ## 关于tomcat-embed-jasper依赖的问题
 > 有provided情况

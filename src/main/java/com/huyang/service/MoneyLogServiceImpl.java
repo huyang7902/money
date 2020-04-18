@@ -42,7 +42,7 @@ public class MoneyLogServiceImpl implements MoneyLogService{
     }
 
     @Override
-    public int balance() {
-        return moneyLogMapper.balance();
+    public int balance(Integer settlementId) {
+        return moneyLogMapper.balance(settlementId);
     }
 }

@@ -132,7 +132,7 @@
     where ID = #{id,jdbcType=INTEGER}
   </update>
   <update id="balance">
-    UPDATE money_log set STATUS = 0 where STATUS = 1
+    UPDATE money_log set STATUS = 0, SETTLEMENT_ID=#{settlementId} where STATUS = 1
   </update>
 
   <select id="getMoneyLogByYearAndMonth" resultMap="BaseResultMap">
@@ -189,5 +189,9 @@
         and DATE_FORMAT(CREATE_TIME, '%Y') = #{year}
       </if>
 
+  </select>
+
+  <select id="getMoneyLogBySettlementId" resultMap="BaseResultMap">
+    select * from money_log where SETTLEMENT_ID = #{settlementId} order by CREATE_TIME asc
   </select>
 </mapper>
